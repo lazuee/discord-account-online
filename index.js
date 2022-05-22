@@ -46,8 +46,9 @@ class Onliner extends EventEmitter {
             this.emit("log", "No tokens found");
             return;
           }
-
-          if (this.isReady && this.collection.size > 0) {
+            
+          const reload = false; //true - to reload the accounts
+          if (reload && this.isReady && this.collection.size > 0) {
             this.emit("log", `\nReloading ${tokens.length} tokens`);
 
             this.collection.forEach((bot) => {
@@ -81,7 +82,6 @@ class Onliner extends EventEmitter {
               })
               .catch((error) => {
                 this.emit("log", `Failed to login with token ${clean(token)}`);
-                this.emit("log", error);
                 this.db.set("tokens", tokens.filter((t) => t !== token));
                 this.collection.delete(token);
               });
