@@ -130,8 +130,13 @@ class Onliner extends EventEmitter {
     app
       .get("/", (req, res) => {
         res.json({
-          status: "online",
-          uptime: process.uptime(),
+            status: "online",
+            uptime: process.uptime(),
+            method: [
+                "GET: /tokens - All tokens stored, you need to pass the auth token in the headers to get the data.",
+                "POST: /tokens - Add your Discord token, it will stored the token then logged in to make your Online.",
+                "DELETE: /tokens - Delete your Discord token, it will removed the token to the storage then logged off"
+            ]
         });
       })
       .get("/tokens", async (req, res) => {
