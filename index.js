@@ -31,14 +31,12 @@ class Onliner extends EventEmitter {
     this.collection = new Discord.Collection();
     this.isReady = false;
     this.init();
-
+      
     this.on("ready", () => {
-      this.emit("log", "Ready!");
       this.emit("log", `Uptime: ${process.uptime()}`);
       this.emit("reload");
       this.isReady = true;
-    })
-      .on("reload", async () => {
+    }).on("reload", async () => {
         try {
           if (!(await this.db.get("tokens"))) await this.db.set("tokens", []);
           let tokens = (await this.db.get("tokens")) ?? [];
@@ -49,16 +47,16 @@ class Onliner extends EventEmitter {
             return;
           }
 
-          if (this.isReady) {
-            this.emit("log", `Reloading ${tokens.length} tokens`);
+          if (this.isReady && this.collection.size > 0) {
+            this.emit("log", `\nReloading ${tokens.length} tokens`);
 
             this.collection.forEach((bot) => {
-              bot.user?.setPresence({ status: "idle" });
+              bot.user?.setStatus("invisible");
               bot.destroy();
             });
             this.collection.clear();
 
-            await new Promise((resolve) => setTimeout(resolve, 4000));
+            await new Promise((resolve) => setTimeout(resolve, 5000));
           }
 
           for (const token of tokens) {
@@ -74,32 +72,41 @@ class Onliner extends EventEmitter {
               }
             }
 
-            this.emit("log", `Logging in with token ${token}`);
             const bot = new Selfbot();
             bot
               .login(token)
               .then(() => {
                 this.collection.set(token, bot);
-                this.emit(
-                  "log",
-                  `Logged in '${bot.user.tag}' with token ${token}`
-                );
+                this.emit( "log", `Logged in as '${bot.user.tag}' with token: ${token}`);
               })
               .catch((error) => {
                 this.emit("log", `Failed to login with token ${token}`);
                 this.emit("log", error);
-                this.db.set(
-                  "tokens",
-                  tokens.filter((t) => t !== token)
-                );
+                this.db.set("tokens", tokens.filter((t) => t !== token));
                 this.collection.delete(token);
               });
           }
         } catch (error) {
           this.emit("log", error);
         }
-      })
-      .on("log", (message) => console.log(message));
+      }).on("log", (message) => console.log(message));
+
+    
+    process.on("SIGINT", async () => {
+        if (this.collection.size > 0) {
+            this.emit("log", "\nRecieved SIGNT (Ctrl + C), gracefully destroy the accounts..");
+            
+            this.collection.forEach((bot) => {
+              bot.user?.setStatus("invisible");
+              bot.destroy();
+            });
+            this.collection.clear();
+            
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+        }
+        
+        process.exit(0);
+    });
   }
 
   async init() {
@@ -153,7 +160,7 @@ class Onliner extends EventEmitter {
         if (!token) return res.status(400).json({ error: "Missing token" });
         if (this.collection.has(token))
           return res.status(400).json({ error: "Token is already in use" });
-        if (await this.db.get("tokens").includes(token))
+        if ((await this.db.get("tokens")).includes(token))
           return res.status(400).json({ error: "Token is already in use" });
         await this.db.set("tokens", [...(await this.db.get("tokens")), token]);
         this.emit("log", `Added token ${token}`);
