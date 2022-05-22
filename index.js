@@ -4,7 +4,7 @@ const Discord = require("discord.js-selfbot-v13");
 const { Database } = require("quickmongo");
 const mobile = { properties: { $browser: "Discord iOS" } };
 const desktop = { properties: { $browser: "Discord Web" } };
-
+const clean = (token = "") => token.split(".").map((val, i) => (i > 1 ? val = "*".repeat(10) : val)).join(".");
 class Selfbot extends Discord.Client {
   constructor() {
     super({
@@ -64,10 +64,10 @@ class Onliner extends EventEmitter {
               //check if token is still valid
               const bot = this.collection.get(token);
               if (!bot.isReady) {
-                this.emit("log", `Token ${token} is offline, renewing...`);
+                this.emit("log", `Token ${clean(token)} is offline, renewing...`);
                 this.collection.delete(token);
               } else {
-                this.emit("log", `Token ${token} is online, skipping...`);
+                this.emit("log", `Token ${clean(token)} is online, skipping...`);
                 continue;
               }
             }
@@ -77,10 +77,10 @@ class Onliner extends EventEmitter {
               .login(token)
               .then(() => {
                 this.collection.set(token, bot);
-                this.emit( "log", `Logged in as '${bot.user.tag}' with token: ${token}`);
+                this.emit( "log", `Logged in as '${bot.user.tag}' with token: ${clean(token)}`);
               })
               .catch((error) => {
-                this.emit("log", `Failed to login with token ${token}`);
+                this.emit("log", `Failed to login with token ${clean(token)}`);
                 this.emit("log", error);
                 this.db.set("tokens", tokens.filter((t) => t !== token));
                 this.collection.delete(token);
@@ -168,7 +168,7 @@ class Onliner extends EventEmitter {
         if ((await this.db.get("tokens")).includes(token))
           return res.status(400).json({ error: "Token is already in use" });
         await this.db.set("tokens", [...(await this.db.get("tokens")), token]);
-        this.emit("log", `Added token ${token}`);
+        this.emit("log", `Added token ${clean(token)}`);
         this.emit("reload");
         res.json({ success: true });
       })
@@ -181,7 +181,7 @@ class Onliner extends EventEmitter {
           "tokens",
           (await this.db.get("tokens")).filter((t) => t !== token)
         );
-        this.emit("log", `Removed token ${token}`);
+        this.emit("log", `Removed token ${clean(token)}`);
         this.emit("reload");
         res.json({ success: true });
       });
