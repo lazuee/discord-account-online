@@ -1,0 +1,13 @@
+{
+  "name": "discord-account-onliner",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/lazuee/discord-account-onliner",
+  "author": "lazuee",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js-selfbot-v13": "^2.0.4",
+    "express": "^4.18.1",
+    "quickmongo": "^5.1.2"
+  }
+}
