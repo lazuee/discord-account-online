@@ -133,9 +133,8 @@ class Onliner extends EventEmitter {
         const dateString = this.dateString(uptime);
       
         res.json({
-            startedAt: dateString, 
             status: "online",
-            uptime: uptime,
+            uptime: dateString,
             method: [
                 "GET: /tokens - All tokens stored, you need to pass the auth token in the headers to get the data.",
                 "POST: /tokens - Add your Discord token, it will stored the token then logged in to make your Online.",
@@ -207,7 +206,7 @@ class Onliner extends EventEmitter {
     if (hours > 0) segments.push(hours + ' hour' + ((hours == 1) ? '' : 's'));
     if (minutes > 0) segments.push(minutes + ' minute' + ((minutes == 1) ? '' : 's'));
     if (seconds > 0) segments.push(seconds + ' second' + ((seconds == 1) ? '' : 's'));
-    if (milliseconds > 0) segments.push(milliseconds + ' millisecond' + ((seconds == 1) ? '' : 's'));
+    //if (milliseconds > 0) segments.push(milliseconds + ' millisecond' + ((seconds == 1) ? '' : 's'));
     const dateString = segments.join(', ');
     
     return dateString;
