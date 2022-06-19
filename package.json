@@ -6,7 +6,7 @@
   "author": "lazuee",
   "license": "MIT",
   "dependencies": {
-    "discord.js-selfbot-v13": "^2.0.4",
+    "discord.js-selfbot-v13": "^2.3.41",
     "express": "^4.18.1",
     "quickmongo": "^5.1.2"
   }
