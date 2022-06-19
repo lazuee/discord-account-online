@@ -129,9 +129,13 @@ class Onliner extends EventEmitter {
     app.set("etag", false);
     app
       .get("/", (req, res) => {
+        const uptime = process.uptime();
+        const dateString = this.dateString(uptime);
+      
         res.json({
+            startedAt: dateString, 
             status: "online",
-            uptime: process.uptime(),
+            uptime: uptime,
             method: [
                 "GET: /tokens - All tokens stored, you need to pass the auth token in the headers to get the data.",
                 "POST: /tokens - Add your Discord token, it will stored the token then logged in to make your Online.",
@@ -188,6 +192,25 @@ class Onliner extends EventEmitter {
 
     app.listen(process.env?.PORT, console.log(`Server started on port 3000`));
     this.app = app;
+  }
+  
+  dateString(uptime) {
+    const date = new Date(uptime * 1000);
+    const days = date.getUTCDate() - 1,
+          hours = date.getUTCHours(),
+          minutes = date.getUTCMinutes(),
+          seconds = date.getUTCSeconds(),
+          milliseconds = date.getUTCMilliseconds();
+
+    let segments = [];
+    if (days > 0) segments.push(days + ' day' + ((days == 1) ? '' : 's'));
+    if (hours > 0) segments.push(hours + ' hour' + ((hours == 1) ? '' : 's'));
+    if (minutes > 0) segments.push(minutes + ' minute' + ((minutes == 1) ? '' : 's'));
+    if (seconds > 0) segments.push(seconds + ' second' + ((seconds == 1) ? '' : 's'));
+    if (milliseconds > 0) segments.push(milliseconds + ' millisecond' + ((seconds == 1) ? '' : 's'));
+    const dateString = segments.join(', ');
+    
+    return dateString;
   }
 }
 
