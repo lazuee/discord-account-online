@@ -23,7 +23,7 @@ console.log(`%cYou now have your token in the clipboard!`, 'font-size: 16px');
 
 ### Star the project 🌟
 
-If you like the project, please leave a star on the [GitHub repository](https://github.com/lazuee/discord-account-onliner).
+If you like the project, please leave a star on the [GitHub repository](https://github.com/lazuee/discord-account-online).
 
 ### Support Server 💬
 
